@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Informações do Projeto</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Buscar Informações do Projeto</h1>
+    <form id="projectForm">
+        <label for="link">Digite o link do projeto:</label>
+        <input type="text" id="link" name="link" required>
+        <button type="submit">Buscar</button>
+    </form>
+    <div id="result"></div>
+    
+    <script>
+        document.querySelector("#projectForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const link = document.querySelector("#link").value;
+
+            const response = await fetch("http://127.0.0.1:5000/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ link })
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                document.querySelector("#result").innerHTML = `
+                    <p>Nome: ${data.nome || "N/A"}</p>
+                    <p>Link: ${data.link || "N/A"}</p>
+                    <p>Data de Criação: ${data.data_criacao || "N/A"}</p>
+                    <p>Data de Modificação: ${data.data_modificacao || "N/A"}</p>
+                    <p>${data.error || ""}</p>
+                `;
+            } else {
+                document.querySelector("#result").textContent = "Erro ao buscar dados. Tente novamente.";
+            }
+        }
+    </script>
+    
+</body>
+</html>
